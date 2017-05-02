@@ -3,11 +3,21 @@ package io.skygear.skygear.eventtracking;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.LocaleList;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -93,6 +103,37 @@ public class Utils {
 
     public static String getDeviceTimeZone() {
         return TimeZone.getDefault().getID();
+    }
+
+    static void readToEnd(InputStream inputStream) throws IOException {
+        byte[] buffer = new byte[1024];
+        while (inputStream.read(buffer) != -1);
+    }
+
+    static void transferTo(InputStream inputStream, OutputStream outputStream) throws IOException {
+        byte[] buffer = new byte[1024];
+        int len;
+        while ((len = inputStream.read(buffer)) != -1) {
+            outputStream.write(buffer, 0, len);
+        }
+    }
+
+    static URL fromUriToURL(Uri uri) throws MalformedURLException {
+        String encoded = uri.toString();
+        URL url = new URL(encoded);
+        return url;
+    }
+
+    static byte[] fromJSONObjectToBytes(JSONObject jsonObject) throws UnsupportedEncodingException {
+        String jsonString = jsonObject.toString();
+        byte[] bytes = jsonString.getBytes("UTF-8");
+        return bytes;
+    }
+
+    static JSONObject fromBytesTOJSONObject(byte[] bytes) throws IOException, JSONException {
+        String jsonString = new String(bytes, "UTF-8");
+        JSONObject jsonObject = new JSONObject(jsonString);
+        return jsonObject;
     }
 
     private static String toBCP47LanguageTag(Locale loc) {
