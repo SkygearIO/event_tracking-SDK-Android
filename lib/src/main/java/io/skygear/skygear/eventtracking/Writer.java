@@ -66,7 +66,12 @@ class Writer {
         mTimer.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                Writer.this.flushIfHasSomeEvents();
+                mExecutor.submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        Writer.this.flushIfHasSomeEvents();
+                    }
+                });
             }
         }, 0L, DEFAULT_TIMER_INTERVAL, TimeUnit.SECONDS);
     }
