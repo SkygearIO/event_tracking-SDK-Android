@@ -38,6 +38,7 @@ class Writer {
     private static final int DEFAULT_FLUSH_LIMIT = 10;
     private static final long DEFAULT_TIMER_INTERVAL = 30; // in seconds
     private static final int DEFAULT_UPLOAD_LIMIT = 20;
+    private static final int DEFAULT_MAX_LENGTH = 1000;
 
     private final Context mContext;
     private final ExecutorService mExecutor;
@@ -60,6 +61,7 @@ class Writer {
             @Override
             public void run() {
                 Writer.this.doRestore();
+                Writer.this.dropIfNeeded();
                 Writer.this.flushIfHasSomeEvents();
             }
         });
@@ -188,12 +190,27 @@ class Writer {
 
     private void doWrite(HashMap<String, Object> event) {
         try {
-            mEvents.add(event);
-            Log.d(LOGTAG, "doWrite: after write: " + mEvents.size());
+            addAndDrop(event);
             persist();
             flushIfEnough();
         } catch (Exception e) {
             Log.e(LOGTAG, "doWrite", e);
+        }
+    }
+
+    private void addAndDrop(HashMap<String, Object> event) {
+        mEvents.add(event);
+        Log.d(LOGTAG, "addAndDrop:add: " + mEvents.size());
+        dropIfNeeded();
+    }
+
+    private void dropIfNeeded() {
+        if (mEvents.size() > DEFAULT_MAX_LENGTH) {
+            int originalSize = mEvents.size();
+            int startIndex = originalSize - DEFAULT_MAX_LENGTH;
+            int endIndex = originalSize;
+            mEvents = new ArrayList<>(mEvents.subList(startIndex, endIndex));
+            Log.d(LOGTAG, "drop: " + startIndex);
         }
     }
 
