@@ -103,6 +103,7 @@ public class SkygearTracker {
         mEnvironmentAttributes.put("_device_carrier", Utils.getDeviceCarrier(context));
         mEnvironmentAttributes.put("_device_locales", formatBCP47Tags(Utils.getDeviceLocales(context)));
         mEnvironmentAttributes.put("_device_locale", Utils.getDeviceLocale(context));
+        mEnvironmentAttributes.put("_device_timezone", Utils.getDeviceTimeZone());
     }
 
     private String formatBCP47Tags(ArrayList<String> tags) {
