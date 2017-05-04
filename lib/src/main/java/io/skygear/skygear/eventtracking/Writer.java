@@ -60,6 +60,7 @@ class Writer {
             @Override
             public void run() {
                 Writer.this.doRestore();
+                Writer.this.flushIfHasSomeEvents();
             }
         });
 
