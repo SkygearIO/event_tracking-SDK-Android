@@ -214,7 +214,7 @@ class Writer {
         }
     }
 
-    private void persist() throws Exception {
+    private void persist() throws IOException, JSONException {
         JSONObject jsonObject = serializeEvents(mEvents);
         FileOutputStream outputStream = null;
         try {
@@ -259,6 +259,7 @@ class Writer {
         try {
             upload(jsonObject);
             mEvents = new ArrayList<>(mEvents.subList(events.size(), mEvents.size()));
+            persist();
         } catch (Exception e) {
             throw e;
         }
